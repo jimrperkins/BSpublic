@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Partición de grafos (I). Módulos en redes biológicas – Biología de Sistemas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-61bc7d33b66c970a0744400528b198fd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Biología de Sistemas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./analisis_topo.html"> 
+<span class="menu-text">Análisis y Topología (I)</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./analisis_topo_2.html"> 
+<span class="menu-text">Análisis y Topología (II)</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./clustering.html" aria-current="page"> 
+<span class="menu-text">Clustering</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introducción-módulos-en-redes-biológicas" id="toc-introducción-módulos-en-redes-biológicas" class="nav-link active" data-scroll-target="#introducción-módulos-en-redes-biológicas">Introducción: Módulos en Redes Biológicas</a>
+  <ul class="collapse">
+  <li><a href="#por-qué-es-modular-la-biología" id="toc-por-qué-es-modular-la-biología" class="nav-link" data-scroll-target="#por-qué-es-modular-la-biología">¿Por qué es modular la biología?</a></li>
+  <li><a href="#módulos-dentro-de-módulos" id="toc-módulos-dentro-de-módulos" class="nav-link" data-scroll-target="#módulos-dentro-de-módulos">Módulos dentro de Módulos</a></li>
+  <li><a href="#para-qué-sirve-encontrar-módulos" id="toc-para-qué-sirve-encontrar-módulos" class="nav-link" data-scroll-target="#para-qué-sirve-encontrar-módulos">¿Para qué sirve encontrar módulos?</a></li>
+  <li><a href="#tres-familias-de-métodos" id="toc-tres-familias-de-métodos" class="nav-link" data-scroll-target="#tres-familias-de-métodos">Tres Familias de Métodos</a></li>
+  </ul></li>
+  <li><a href="#familia-1-cortar-los-puentes.-edge-betweenness" id="toc-familia-1-cortar-los-puentes.-edge-betweenness" class="nav-link" data-scroll-target="#familia-1-cortar-los-puentes.-edge-betweenness"><strong>Familia 1: Cortar los Puentes. Edge Betweenness</strong></a>
+  <ul class="collapse">
+  <li><a href="#conceptos-básicos-de-edge-betweenness" id="toc-conceptos-básicos-de-edge-betweenness" class="nav-link" data-scroll-target="#conceptos-básicos-de-edge-betweenness"><strong>Conceptos Básicos de Edge Betweenness</strong></a>
+  <ul class="collapse">
+  <li><a href="#visualización-del-proceso-de-clustering" id="toc-visualización-del-proceso-de-clustering" class="nav-link" data-scroll-target="#visualización-del-proceso-de-clustering"><strong>Visualización del Proceso de Clustering</strong></a></li>
+  <li><a href="#ventajas-y-desventajas" id="toc-ventajas-y-desventajas" class="nav-link" data-scroll-target="#ventajas-y-desventajas"><strong>Ventajas y Desventajas</strong></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#familia-2-maximizar-la-modularidad" id="toc-familia-2-maximizar-la-modularidad" class="nav-link" data-scroll-target="#familia-2-maximizar-la-modularidad"><strong>Familia 2: Maximizar la Modularidad</strong></a>
+  <ul class="collapse">
+  <li><a href="#louvain" id="toc-louvain" class="nav-link" data-scroll-target="#louvain"><strong>Louvain</strong></a>
+  <ul class="collapse">
+  <li><a href="#cómo-funciona-el-algoritmo-louvain" id="toc-cómo-funciona-el-algoritmo-louvain" class="nav-link" data-scroll-target="#cómo-funciona-el-algoritmo-louvain"><strong>¿Cómo Funciona el Algoritmo Louvain?</strong></a></li>
+  <li><a href="#louvain-paso-a-paso" id="toc-louvain-paso-a-paso" class="nav-link" data-scroll-target="#louvain-paso-a-paso"><strong>Louvain Paso a Paso</strong></a></li>
+  <li><a href="#ventajas-y-desventajas-1" id="toc-ventajas-y-desventajas-1" class="nav-link" data-scroll-target="#ventajas-y-desventajas-1"><strong>Ventajas y Desventajas</strong></a></li>
+  <li><a href="#ejemplo-en-r" id="toc-ejemplo-en-r" class="nav-link" data-scroll-target="#ejemplo-en-r"><strong>Ejemplo en R</strong></a></li>
+  </ul></li>
+  <li><a href="#otros-métodos-de-esta-familia" id="toc-otros-métodos-de-esta-familia" class="nav-link" data-scroll-target="#otros-métodos-de-esta-familia"><strong>Otros Métodos de esta Familia</strong></a>
+  <ul class="collapse">
+  <li><a href="#fast-greedy" id="toc-fast-greedy" class="nav-link" data-scroll-target="#fast-greedy"><strong>Fast Greedy</strong></a></li>
+  <li><a href="#leiden" id="toc-leiden" class="nav-link" data-scroll-target="#leiden"><strong>Leiden</strong></a></li>
+  </ul></li>
+  <li><a href="#limite-resolucion" id="toc-limite-resolucion" class="nav-link" data-scroll-target="#limite-resolucion"><strong>El Límite de Resolución de la Modularidad</strong></a></li>
+  </ul></li>
+  <li><a href="#familia-3-seguir-el-flujo" id="toc-familia-3-seguir-el-flujo" class="nav-link" data-scroll-target="#familia-3-seguir-el-flujo"><strong>Familia 3: Seguir el Flujo</strong></a>
+  <ul class="collapse">
+  <li><a href="#infomap" id="toc-infomap" class="nav-link" data-scroll-target="#infomap"><strong>Infomap</strong></a>
+  <ul class="collapse">
+  <li><a href="#cómo-funciona-el-algoritmo-infomap" id="toc-cómo-funciona-el-algoritmo-infomap" class="nav-link" data-scroll-target="#cómo-funciona-el-algoritmo-infomap"><strong>¿Cómo Funciona el Algoritmo Infomap?</strong></a></li>
+  <li><a href="#ventajas-y-desventajas-2" id="toc-ventajas-y-desventajas-2" class="nav-link" data-scroll-target="#ventajas-y-desventajas-2"><strong>Ventajas y Desventajas</strong></a></li>
+  <li><a href="#ejemplo-en-r-1" id="toc-ejemplo-en-r-1" class="nav-link" data-scroll-target="#ejemplo-en-r-1"><strong>Ejemplo en R</strong></a></li>
+  </ul></li>
+  <li><a href="#otro-método-de-esta-familia-walktrap" id="toc-otro-método-de-esta-familia-walktrap" class="nav-link" data-scroll-target="#otro-método-de-esta-familia-walktrap"><strong>Otro Método de esta Familia: Walktrap</strong></a></li>
+  </ul></li>
+  <li><a href="#un-método-más-label-propagation" id="toc-un-método-más-label-propagation" class="nav-link" data-scroll-target="#un-método-más-label-propagation"><strong>Un Método más: Label Propagation</strong></a></li>
+  <li><a href="#comparación-de-los-métodos" id="toc-comparación-de-los-métodos" class="nav-link" data-scroll-target="#comparación-de-los-métodos"><strong>Comparación de los Métodos</strong></a>
+  <ul class="collapse">
+  <li><a href="#resumen" id="toc-resumen" class="nav-link" data-scroll-target="#resumen">Resumen</a></li>
+  </ul></li>
+  <li><a href="#ejercicio" id="toc-ejercicio" class="nav-link" data-scroll-target="#ejercicio"><strong>Ejercicio</strong></a></li>
+  <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias"><strong>Referencias</strong></a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Partición de grafos (I). Módulos en redes biológicas</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introducción-módulos-en-redes-biológicas" class="level1">
+<h1>Introducción: Módulos en Redes Biológicas</h1>
+<p>Las redes biológicas no son homogéneas: están formadas por <strong>módulos</strong> (o <strong>comunidades</strong>), grupos de nodos muy conectados entre sí y poco conectados con el resto de la red. Un módulo suele corresponder a una unidad funcional:</p>
+<ul>
+<li>En <strong>redes metabólicas</strong>, los módulos corresponden a rutas metabólicas: los metabolitos de la glucólisis, por ejemplo, están mucho más conectados entre sí que con los de otras rutas.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="met_pathway.png" class="img-fluid figure-img"></p>
+<figcaption>public.ornl.gov</figcaption>
+</figure>
+</div>
+<ul>
+<li>En <strong>redes de co-expresión génica</strong>, los módulos son grupos de genes que se activan y desactivan juntos, como los genes del ciclo celular o de la respuesta al estrés.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="coexp.png" class="img-fluid figure-img"></p>
+<figcaption>rna-seqblog.com</figcaption>
+</figure>
+</div>
+<ul>
+<li>En <strong>redes de interacción proteína-proteína (PPI)</strong>, los módulos corresponden a complejos proteicos (el ribosoma, el proteasoma) o a vías de señalización.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ppi_clusters.png" class="img-fluid figure-img"></p>
+<figcaption>Labusek et al., 2023</figcaption>
+</figure>
+</div>
+<section id="por-qué-es-modular-la-biología" class="level2">
+<h2 class="anchored" data-anchor-id="por-qué-es-modular-la-biología">¿Por qué es modular la biología?</h2>
+<p>La organización en módulos no es casual (Hartwell et al., 1999):</p>
+<ul>
+<li><strong>Especificidad</strong>: cada módulo realiza su tarea sin interferir con los demás, igual que las piezas de una máquina.</li>
+<li><strong>Robustez</strong>: un fallo (una mutación, un fármaco) tiende a quedarse dentro de su módulo, en lugar de propagarse a toda la célula.</li>
+<li><strong>Evolución</strong>: un módulo que funciona se puede reutilizar. La cascada de quinasas MAPK, por ejemplo, aparece una y otra vez en distintas vías de señalización (respuesta a factores de crecimiento, a feromonas en levadura, al estrés), conectada a receptores y dianas diferentes.</li>
+</ul>
+</section>
+<section id="módulos-dentro-de-módulos" class="level2">
+<h2 class="anchored" data-anchor-id="módulos-dentro-de-módulos">Módulos dentro de Módulos</h2>
+<p>Los módulos, además, están <strong>anidados</strong>: las proteínas ribosómicas forman la subunidad pequeña y la grande del ribosoma; el ribosoma forma parte de la maquinaria de traducción; y esta, de la síntesis de proteínas. Del mismo modo, la glucólisis es una ruta dentro del metabolismo energético.</p>
+<p>Esto importa a la hora de buscar comunidades: <strong>no existe un único número “correcto” de comunidades</strong>, sino que depende de la escala que nos interese. Por eso algunos métodos devuelven una jerarquía completa (un dendrograma) que podemos cortar al nivel que queramos, y por eso veremos que algunos métodos tienden a pasar por alto los módulos más pequeños.</p>
+</section>
+<section id="para-qué-sirve-encontrar-módulos" class="level2">
+<h2 class="anchored" data-anchor-id="para-qué-sirve-encontrar-módulos">¿Para qué sirve encontrar módulos?</h2>
+<ul>
+<li><strong>Predecir la función de genes desconocidos</strong> (<em>guilt by association</em>): si una proteína sin función conocida está en un módulo en el que casi todas las demás participan en la reparación del ADN, probablemente también lo haga.</li>
+<li><strong>Entender enfermedades</strong>: los genes asociados a una misma enfermedad tienden a concentrarse en la misma región del interactoma, formando un “módulo de enfermedad” (Barabási et al., 2011). Encontrar ese módulo ayuda a proponer nuevos genes candidatos.</li>
+<li><strong>Encontrar dianas terapéuticas</strong>: Gordon et al.&nbsp;(2020) construyeron la red de interacciones entre las proteínas del SARS-CoV-2 y las humanas (332 interacciones de alta confianza). Agrupando las proteínas humanas en módulos (por ejemplo, de traducción o de tráfico vesicular), identificaron 66 proteínas humanas que ya eran dianas de 69 fármacos y compuestos, aprobados o en desarrollo, y que se podían ensayar contra el virus.</li>
+<li><strong>Reducir la complejidad de los datos ómicos</strong>: en lugar de analizar 20.000 genes uno a uno, se analizan unas decenas de módulos de co-expresión. Es la idea del método WGCNA (Langfelder y Horvath, 2008), que veremos más adelante en el curso.</li>
+</ul>
+</section>
+<section id="tres-familias-de-métodos" class="level2">
+<h2 class="anchored" data-anchor-id="tres-familias-de-métodos">Tres Familias de Métodos</h2>
+<p>Existen muchísimos algoritmos de detección de comunidades, pero casi todos parten de una de estas tres ideas sobre qué es una comunidad:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Familia</th>
+<th>Idea</th>
+<th>Método que veremos en detalle</th>
+<th>Otros métodos de la familia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>1. Cortar los puentes</strong></td>
+<td>Las comunidades están separadas por aristas “cuello de botella”</td>
+<td>Edge Betweenness</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>2. Maximizar la modularidad</strong></td>
+<td>La mejor partición es la de mayor <span class="math inline">\(Q\)</span></td>
+<td>Louvain</td>
+<td>Fast Greedy, Leiden</td>
+</tr>
+<tr class="odd">
+<td><strong>3. Seguir el flujo</strong></td>
+<td>Un caminante aleatorio queda “atrapado” dentro de las comunidades</td>
+<td>Infomap</td>
+<td>Walktrap</td>
+</tr>
+</tbody>
+</table>
+<p>Lo que define cada familia es <strong>cómo encuentra las comunidades</strong>. Algunos métodos de las familias 1 y 3 usan además la modularidad al final, solo para decidir con cuántas comunidades quedarse; eso no los convierte en métodos de la familia 2, que usan la modularidad para buscar las comunidades.</p>
+<p>Veremos en detalle un método de cada familia, con su explicación y un ejemplo en R, y describiremos brevemente los demás. Al final veremos un método más que no encaja en ninguna familia (Label Propagation) y compararemos todos los métodos sobre una misma red en la que conocemos las comunidades “reales”.</p>
+</section>
+</section>
+<section id="familia-1-cortar-los-puentes.-edge-betweenness" class="level1">
+<h1><strong>Familia 1: Cortar los Puentes. Edge Betweenness</strong></h1>
+<p>El algoritmo de Girvan y Newman (2002) es la forma más directa de buscar comunidades: encontrar las aristas que hacen de puente entre grupos y quitarlas, una a una, hasta que la red se rompe en trozos. Esos trozos son las comunidades. Para saber qué aristas son puentes usa la <strong>betweenness</strong>, que ya conocemos de la primera práctica.</p>
+<section id="conceptos-básicos-de-edge-betweenness" class="level2">
+<h2 class="anchored" data-anchor-id="conceptos-básicos-de-edge-betweenness"><strong>Conceptos Básicos de Edge Betweenness</strong></h2>
+<p>La <strong>betweenness de una arista</strong> es casi la misma medida que la <strong>centralidad de intermediación</strong> que vimos en la <a href="analisis_topo.html">primera práctica</a>, pero aplicada a los enlaces: mide cuántos caminos más cortos entre pares de nodos pasan por un <em>enlace</em> específico. Los enlaces con alta betweenness suelen actuar como “puentes” entre diferentes comunidades dentro de una red.</p>
+<p>Matemáticamente, la betweenness de una arista <span class="math inline">\(e\)</span> se define como:</p>
+<p><span class="math display">\[
+B(e) = \sum_{s \neq t} \frac{\sigma_{st}(e)}{\sigma_{st}}
+\]</span></p>
+<p>Donde:<br>
+- <span class="math inline">\(\sigma_{st}\)</span> es el número total de caminos más cortos entre los nodos <span class="math inline">\(s\)</span> y <span class="math inline">\(t\)</span>.<br>
+- <span class="math inline">\(\sigma_{st}(e)\)</span> es el número de esos caminos que pasan por la arista <span class="math inline">\(e\)</span>.</p>
+<section id="cómo-funciona-el-algoritmo" class="level4">
+<h4 class="anchored" data-anchor-id="cómo-funciona-el-algoritmo"><strong>Cómo Funciona el Algoritmo</strong></h4>
+<ol type="1">
+<li><p><strong>Cálculo de Betweenness Inicial</strong>:<br>
+Se calcula la betweenness de todas las aristas. Es el paso más lento: hay que calcular los caminos más cortos entre todos los pares de nodos.</p></li>
+<li><p><strong>Eliminación de Aristas</strong>:<br>
+Se quita la arista con la betweenness más alta. Si era el último puente entre dos grupos, la red se parte en dos.</p></li>
+<li><p><strong>Reevaluación de Betweenness</strong>:<br>
+Después de eliminar una arista, se recalcula la betweenness de las aristas restantes, ya que la estructura de la red ha cambiado: los caminos que usaban la arista eliminada buscan otra ruta, y otra arista pasa a ser el “cuello de botella”.</p></li>
+<li><p><strong>Repetición</strong>:<br>
+Se repite hasta quitar todas las aristas, cuando cada nodo queda solo.</p></li>
+<li><p><strong>Elección del Corte</strong>:<br>
+Los pasos anteriores producen una secuencia de particiones, de una sola comunidad (la red entera) a tantas comunidades como nodos. Para quedarnos con una, se calcula la modularidad (<span class="math inline">\(Q\)</span>) de cada partición <strong>sobre la red original</strong> y se elige la de <span class="math inline">\(Q\)</span> máxima. Fíjate en que la modularidad solo se usa al final, para <strong>elegir</strong> entre las particiones: las comunidades se encuentran cortando puentes, no maximizando <span class="math inline">\(Q\)</span> (eso es lo que hará la familia 2). La modularidad <a href="analisis_topo_2.html">la vimos en la práctica anterior</a>; mide la calidad de una partición y se define como:</p>
+<p><span class="math display">\[
+Q = \frac{1}{2m} \sum_{i,j} \left[ A_{ij} - \frac{k_i k_j}{2m} \right] \delta(c_i, c_j)
+\]</span></p>
+<p>Donde:</p>
+<ul>
+<li><span class="math inline">\(A_{ij}\)</span>: Matriz de adyacencia.<br>
+</li>
+<li><span class="math inline">\(k_i, k_j\)</span>: Grados de los nodos <span class="math inline">\(i\)</span> y <span class="math inline">\(j\)</span>.<br>
+</li>
+<li><span class="math inline">\(m\)</span>: Número total de aristas en la red.<br>
+</li>
+<li><span class="math inline">\(\delta(c_i, c_j)\)</span>: Indicador de si <span class="math inline">\(i\)</span> y <span class="math inline">\(j\)</span> están en la misma comunidad.</li>
+</ul></li>
+</ol>
+</section>
+<section id="visualización-del-proceso-de-clustering" class="level3">
+<h3 class="anchored" data-anchor-id="visualización-del-proceso-de-clustering"><strong>Visualización del Proceso de Clustering</strong></h3>
+<p>Para ver el algoritmo paso a paso usamos una red <strong>LFR</strong> (<em>Lancichinetti-Fortunato-Radicchi</em>): un generador de redes sintéticas con <strong>comunidades conocidas</strong> (“plantadas”), grados heterogéneos (hay hubs) y comunidades de distintos tamaños. El parámetro <code>mu</code> es la fracción de las aristas de cada nodo que salen de su comunidad: con <code>mu = 0.1</code>, el 90% de las aristas quedan dentro, así que las comunidades son claras. La función <code>sample_lfr()</code> está en el paquete <strong>netUtils</strong> (<code>install.packages("netUtils")</code>), y guarda la comunidad real de cada nodo en <code>V(g)$membership</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(netUtils)  <span class="co"># sample_lfr(): redes con comunidades conocidas</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>g_lfr <span class="ot">&lt;-</span> <span class="fu">sample_lfr</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">tau1 =</span> <span class="dv">3</span>, <span class="at">tau2 =</span> <span class="fl">1.5</span>, <span class="at">mu =</span> <span class="fl">0.1</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">average_degree =</span> <span class="dv">4</span>, <span class="at">max_degree =</span> <span class="dv">5</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Comunidades plantadas:"</span>, <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">V</span>(g_lfr)<span class="sc">$</span>membership)), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Comunidades plantadas: 14 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Usamos la misma disposición en todos los dibujos para poder comparar</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>layout_lfr <span class="ot">&lt;-</span> <span class="fu">layout_with_fr</span>(g_lfr)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Dibuja la red coloreando cada componente conexa, con la arista de</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># mayor betweenness (la siguiente que se eliminará) en rojo</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>dibuja_paso <span class="ot">&lt;-</span> <span class="cf">function</span>(h, titulo) {</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  comp <span class="ot">&lt;-</span> <span class="fu">components</span>(h)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  eb <span class="ot">&lt;-</span> <span class="fu">edge_betweenness</span>(h)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  siguiente <span class="ot">&lt;-</span> <span class="fu">seq_along</span>(eb) <span class="sc">==</span> <span class="fu">which.max</span>(eb)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(h, <span class="at">layout =</span> layout_lfr, <span class="at">main =</span> titulo,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">vertex.color =</span> <span class="fu">rainbow</span>(comp<span class="sc">$</span>no)[comp<span class="sc">$</span>membership],</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">vertex.size =</span> <span class="dv">6</span>, <span class="at">vertex.label =</span> <span class="cn">NA</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">edge.color =</span> <span class="fu">ifelse</span>(siguiente, <span class="st">"red"</span>, <span class="st">"grey"</span>),</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">edge.width =</span> <span class="fu">ifelse</span>(siguiente, <span class="dv">4</span>, <span class="dv">1</span>))</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> g_lfr</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">20</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Dibujamos la red original y cada una de las 9 primeras eliminaciones</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="fu">dibuja_paso</span>(h, <span class="st">"Red original"</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>) {</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  h <span class="ot">&lt;-</span> <span class="fu">delete_edges</span>(h, <span class="fu">which.max</span>(<span class="fu">edge_betweenness</span>(h)))</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  comp <span class="ot">&lt;-</span> <span class="fu">components</span>(h)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># La modularidad se calcula siempre sobre la red ORIGINAL</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  q[i] <span class="ot">&lt;-</span> <span class="fu">modularity</span>(g_lfr, comp<span class="sc">$</span>membership)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">&lt;=</span> <span class="dv">9</span>) {</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dibuja_paso</span>(h, <span class="fu">paste0</span>(<span class="st">"Tras quitar "</span>, i, <span class="fu">ifelse</span>(i <span class="sc">==</span> <span class="dv">1</span>, <span class="st">" arista"</span>, <span class="st">" aristas"</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>                          comp<span class="sc">$</span>no, <span class="fu">ifelse</span>(comp<span class="sc">$</span>no <span class="sc">==</span> <span class="dv">1</span>, <span class="st">" comunidad"</span>, <span class="st">" comunidades"</span>),</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>                          <span class="st">", Q = "</span>, <span class="fu">round</span>(q[i], <span class="dv">3</span>)))</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="1440"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Seguimos eliminando aristas hasta 20 y vemos cómo evoluciona <span class="math inline">\(Q\)</span>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, q, <span class="at">type =</span> <span class="st">"b"</span>, <span class="at">pch =</span> <span class="dv">19</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Aristas eliminadas"</span>, <span class="at">ylab =</span> <span class="st">"Modularidad Q (red original)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>No todas las eliminaciones dividen la red: a veces hay que quitar varias aristas (varios “puentes” en paralelo) antes de que una comunidad se separe. Cada vez que se separa una comunidad, <span class="math inline">\(Q\)</span> aumenta. En la práctica no hace falta programar el bucle: <code>cluster_edge_betweenness()</code> hace todo el proceso y elige automáticamente el corte con la <span class="math inline">\(Q\)</span> máxima.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>eb <span class="ot">&lt;-</span> <span class="fu">cluster_edge_betweenness</span>(g_lfr)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Comunidades:"</span>, <span class="fu">length</span>(eb), <span class="st">" Q ="</span>, <span class="fu">round</span>(<span class="fu">modularity</span>(eb), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Comunidades: 12  Q = 0.822 </code></pre>
+</div>
+</div>
+</section>
+<section id="ventajas-y-desventajas" class="level3">
+<h3 class="anchored" data-anchor-id="ventajas-y-desventajas"><strong>Ventajas y Desventajas</strong></h3>
+<p><strong>Ventajas</strong>:</p>
+<ul>
+<li>Es fácil de entender y de visualizar: se ve cómo la red se va partiendo paso a paso.</li>
+<li>Funciona bien cuando las comunidades están unidas por pocos puentes claros.</li>
+<li>Es determinista: la misma red da siempre el mismo resultado.</li>
+</ul>
+<p><strong>Desventajas</strong>:</p>
+<ul>
+<li>Es lento: hay que recalcular la betweenness tras cada eliminación (del orden de <span class="math inline">\(m^2 n\)</span> operaciones), así que no sirve para redes de miles de nodos.</li>
+<li>Como usa la modularidad para elegir el corte, hereda sus limitaciones (ver el <a href="#limite-resolucion">límite de resolución</a> más abajo).</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="familia-2-maximizar-la-modularidad" class="level1">
+<h1><strong>Familia 2: Maximizar la Modularidad</strong></h1>
+<p>Los métodos de esta familia buscan directamente la partición con la <strong>modularidad</strong> (<span class="math inline">\(Q\)</span>) más alta, la medida que vimos <a href="analisis_topo_2.html">en la práctica anterior</a>. Probar todas las particiones posibles es inviable incluso en redes pequeñas, así que cada algoritmo usa una estrategia distinta para encontrar una partición buena en poco tiempo.</p>
+<section id="louvain" class="level2">
+<h2 class="anchored" data-anchor-id="louvain"><strong>Louvain</strong></h2>
+<p><strong>Louvain</strong> (Blondel et al., 2008) es probablemente el método más usado hoy en día para buscar comunidades, sobre todo porque es muy rápido: funciona sin problemas con redes de millones de nodos. Ya lo usamos en la práctica anterior para calcular la modularidad; ahora vamos a ver cómo funciona por dentro.</p>
+<section id="cómo-funciona-el-algoritmo-louvain" class="level3">
+<h3 class="anchored" data-anchor-id="cómo-funciona-el-algoritmo-louvain"><strong>¿Cómo Funciona el Algoritmo Louvain?</strong></h3>
+<p>El algoritmo tiene dos fases, que se repiten:</p>
+<ol type="1">
+<li><strong>Fase 1: Optimización Local de la Modularidad</strong>
+<ul>
+<li>El algoritmo comienza asignando a cada nodo su propia comunidad.</li>
+<li>Luego recorre los nodos en orden aleatorio y evalúa si mover cada nodo a la comunidad de uno de sus vecinos incrementa la modularidad.</li>
+<li>El nodo se mueve a la comunidad que más aumenta la modularidad (si alguna la aumenta). Se repite hasta que ningún movimiento individual mejora <span class="math inline">\(Q\)</span>.</li>
+</ul></li>
+<li><strong>Fase 2: Construcción de la Red de Comunidades</strong>
+<ul>
+<li>Cada comunidad se <strong>agrupa</strong> en un “supernodo”, y se construye una nueva red en la que los nodos son las comunidades encontradas.</li>
+<li>Se vuelve a aplicar la Fase 1 sobre esta nueva red, y así sucesivamente hasta que ya no se pueda mejorar la modularidad.</li>
+</ul></li>
+</ol>
+<p>Cada vuelta trabaja con una red más pequeña, en la que cada nodo es una comunidad de la vuelta anterior. Por eso es tan rápido, y por eso también produce varios niveles de comunidades, de más pequeñas a más grandes.</p>
+</section>
+<section id="louvain-paso-a-paso" class="level3">
+<h3 class="anchored" data-anchor-id="louvain-paso-a-paso"><strong>Louvain Paso a Paso</strong></h3>
+<p>Para ver las dos fases en acción, volvemos a la red LFR que usamos con Edge Betweenness. <code>cluster_louvain()</code> guarda la partición de cada vuelta del algoritmo en <code>$memberships</code>, y con <code>contract()</code> podemos construir la red de supernodos que usa la Fase 2:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>lv <span class="ot">&lt;-</span> <span class="fu">cluster_louvain</span>(g_lfr)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>niveles <span class="ot">&lt;-</span> lv<span class="sc">$</span>memberships   <span class="co"># una fila por vuelta del algoritmo</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>nivel1 <span class="ot">&lt;-</span> niveles[<span class="dv">1</span>, ]      <span class="co"># comunidades tras la primera Fase 1</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>nivel2 <span class="ot">&lt;-</span> niveles[<span class="fu">nrow</span>(niveles), ]  <span class="co"># comunidades finales</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fase 2: cada comunidad del nivel 1 se convierte en un supernodo.</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Las aristas entre dos comunidades se suman (peso = número de aristas)</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># y las aristas internas desaparecen</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>g_peso <span class="ot">&lt;-</span> g_lfr</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">E</span>(g_peso)<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>supernodos <span class="ot">&lt;-</span> <span class="fu">contract</span>(g_peso, nivel1, <span class="at">vertex.attr.comb =</span> <span class="st">"ignore"</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>supernodos <span class="ot">&lt;-</span> <span class="fu">simplify</span>(supernodos, <span class="at">edge.attr.comb =</span> <span class="st">"sum"</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Dibujamos cada supernodo en el centro de sus nodos, con un tamaño</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># proporcional al número de nodos que contiene (las mismas coordenadas,</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># normalizadas entre -1 y 1, en los cuatro dibujos)</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>layout_n <span class="ot">&lt;-</span> <span class="fu">norm_coords</span>(layout_lfr)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>layout_super <span class="ot">&lt;-</span> <span class="fu">apply</span>(layout_n, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">tapply</span>(x, nivel1, mean))</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>n_nodos <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(<span class="fu">table</span>(nivel1))</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>nivel2_super <span class="ot">&lt;-</span> <span class="fu">tapply</span>(nivel2, nivel1, <span class="cf">function</span>(x) x[<span class="dv">1</span>])  <span class="co"># comunidad final de cada supernodo</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>colores1 <span class="ot">&lt;-</span> <span class="fu">hcl.colors</span>(<span class="fu">max</span>(nivel1), <span class="st">"Dynamic"</span>)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>colores2 <span class="ot">&lt;-</span> <span class="fu">hcl.colors</span>(<span class="fu">max</span>(nivel2), <span class="st">"Dark 3"</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(g_lfr, <span class="at">layout =</span> layout_n, <span class="at">rescale =</span> <span class="cn">FALSE</span>, <span class="at">vertex.color =</span> colores1[nivel1],</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.size =</span> <span class="dv">6</span>, <span class="at">vertex.label =</span> <span class="cn">NA</span>,</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">"1. Fase 1: "</span>, <span class="fu">max</span>(nivel1), <span class="st">" comunidades, Q = "</span>, <span class="fu">round</span>(lv<span class="sc">$</span>modularity[<span class="dv">1</span>], <span class="dv">3</span>)))</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(supernodos, <span class="at">layout =</span> layout_super, <span class="at">vertex.color =</span> colores1,</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.size =</span> <span class="dv">6</span> <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">sqrt</span>(n_nodos), <span class="at">vertex.label =</span> n_nodos, <span class="at">vertex.label.cex =</span> <span class="fl">0.8</span>, <span class="at">vertex.label.color =</span> <span class="st">"black"</span>,</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>     <span class="at">edge.width =</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">E</span>(supernodos)<span class="sc">$</span>weight, <span class="at">rescale =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">"2. Fase 2: "</span>, <span class="fu">vcount</span>(supernodos), <span class="st">" supernodos</span><span class="sc">\n</span><span class="st">(número de nodos dentro de cada uno)"</span>))</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(supernodos, <span class="at">layout =</span> layout_super, <span class="at">vertex.color =</span> colores2[nivel2_super],</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.size =</span> <span class="dv">6</span> <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">sqrt</span>(n_nodos), <span class="at">vertex.label =</span> n_nodos, <span class="at">vertex.label.cex =</span> <span class="fl">0.8</span>, <span class="at">vertex.label.color =</span> <span class="st">"black"</span>,</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>     <span class="at">edge.width =</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">E</span>(supernodos)<span class="sc">$</span>weight, <span class="at">rescale =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">"3. Fase 1 otra vez, sobre los supernodos:</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">max</span>(nivel2), <span class="st">" comunidades"</span>))</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(g_lfr, <span class="at">layout =</span> layout_n, <span class="at">rescale =</span> <span class="cn">FALSE</span>, <span class="at">vertex.color =</span> colores2[nivel2],</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.size =</span> <span class="dv">6</span>, <span class="at">vertex.label =</span> <span class="cn">NA</span>,</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">"4. Resultado: "</span>, <span class="fu">max</span>(nivel2), <span class="st">" comunidades, Q = "</span>, <span class="fu">round</span>(<span class="fu">max</span>(lv<span class="sc">$</span>modularity), <span class="dv">3</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li><strong>Panel 1</strong>: tras la primera Fase 1, cada nodo se ha unido a la comunidad de alguno de sus vecinos. Salen 21 comunidades pequeñas, algunas de solo 3 o 4 nodos.</li>
+<li><strong>Panel 2</strong>: cada comunidad se convierte en un supernodo (el número indica cuántos nodos contiene). Las aristas entre dos comunidades se juntan en una sola, más gruesa cuantas más aristas había. Las aristas internas no desaparecen del todo: se guardan dentro del supernodo, porque hacen falta para calcular <span class="math inline">\(Q\)</span>, aunque aquí no las dibujamos.</li>
+<li><strong>Panel 3</strong>: se repite la Fase 1, pero ahora los “nodos” que se mueven son los supernodos. Los que están unidos por aristas gruesas acaban juntos: por ejemplo, el 5 y el 3 de abajo, o los dos 4 de la izquierda.</li>
+<li><strong>Panel 4</strong>: el resultado, visto sobre la red original. Ningún movimiento mejora ya la modularidad, así que el algoritmo se para, con <span class="math inline">\(Q\)</span> = 0.818 (frente a 0.67 tras la primera vuelta).</li>
+</ul>
+</section>
+<section id="ventajas-y-desventajas-1" class="level3">
+<h3 class="anchored" data-anchor-id="ventajas-y-desventajas-1"><strong>Ventajas y Desventajas</strong></h3>
+<p><strong>Ventajas</strong>:</p>
+<ul>
+<li><strong>Rápido</strong>: funciona con redes de miles o millones de nodos.</li>
+<li><strong>Varios niveles</strong>: cada vuelta del algoritmo da una partición más gruesa que la anterior.</li>
+<li><strong>Fácil de usar</strong>: no hace falta elegir ningún parámetro (aunque se puede ajustar la resolución, como veremos).</li>
+</ul>
+<p><strong>Desventajas</strong>:</p>
+<ul>
+<li><strong>Resultados variables</strong>: como recorre los nodos en orden aleatorio, dos ejecuciones sobre la misma red pueden dar particiones distintas (usa <code>set.seed()</code> para que tus resultados sean reproducibles).</li>
+<li><strong>Comunidades mal conectadas</strong>: puede producir comunidades internamente desconectadas (lo resuelve Leiden, ver más abajo).</li>
+<li><strong>Límite de resolución</strong>: en redes con comunidades pequeñas, puede fusionarlas con otras (ver más abajo).</li>
+</ul>
+</section>
+<section id="ejemplo-en-r" class="level3">
+<h3 class="anchored" data-anchor-id="ejemplo-en-r"><strong>Ejemplo en R</strong></h3>
+<p>Para los ejemplos usamos una red con <strong>4 comunidades reales</strong> de 25 nodos, creada con <code>sample_islands()</code> como en la práctica anterior:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>red_islas <span class="ot">&lt;-</span> <span class="fu">sample_islands</span>(<span class="dv">4</span>, <span class="dv">25</span>, <span class="fl">0.3</span>, <span class="dv">5</span>)  <span class="co"># 4 islas de 25 nodos, 5 aristas entre cada par</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>layout_islas <span class="ot">&lt;-</span> <span class="fu">layout_with_fr</span>(red_islas)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>louvain_cluster <span class="ot">&lt;-</span> <span class="fu">cluster_louvain</span>(red_islas)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(red_islas, <span class="at">layout =</span> layout_islas, <span class="at">vertex.color =</span> <span class="fu">membership</span>(louvain_cluster),</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.size =</span> <span class="dv">5</span>, <span class="at">vertex.label =</span> <span class="cn">NA</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">"Louvain: "</span>, <span class="fu">length</span>(louvain_cluster), <span class="st">" comunidades, Q = "</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">round</span>(<span class="fu">modularity</span>(louvain_cluster), <span class="dv">2</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Con comunidades claras, el resultado es estable entre ejecuciones...</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">replicate</span>(<span class="dv">10</span>, <span class="fu">length</span>(<span class="fu">cluster_louvain</span>(red_islas)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 4 4 4 4 4 4 4 4 4 4</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ...pero en una red aleatoria cambia cada vez</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>red_aleatoria <span class="ot">&lt;-</span> <span class="fu">sample_gnp</span>(<span class="dv">200</span>, <span class="at">p =</span> <span class="fl">0.03</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">replicate</span>(<span class="dv">10</span>, <span class="fu">length</span>(<span class="fu">cluster_louvain</span>(red_aleatoria)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 10  9 11 11  9 10 10 10 11 10</code></pre>
+</div>
+</div>
+<p>Louvain recupera las cuatro islas. Recuerda la <a href="analisis_topo_2.html">práctica anterior</a>: una red aleatoria con los mismos nodos y aristas también tendría <span class="math inline">\(Q &gt; 0\)</span> (alrededor de 0.3), pero bastante menor. Además, si el número de comunidades cambia mucho entre ejecuciones, es una señal de que la estructura de comunidades de la red es débil.</p>
+</section>
+</section>
+<section id="otros-métodos-de-esta-familia" class="level2">
+<h2 class="anchored" data-anchor-id="otros-métodos-de-esta-familia"><strong>Otros Métodos de esta Familia</strong></h2>
+<section id="fast-greedy" class="level3">
+<h3 class="anchored" data-anchor-id="fast-greedy"><strong>Fast Greedy</strong></h3>
+<p>Fast Greedy (Clauset, Newman y Moore, 2004) es anterior a Louvain y también maximiza <span class="math inline">\(Q\)</span>, pero solo puede <strong>fusionar</strong> comunidades: empieza con cada nodo en su propia comunidad y, en cada paso, une las dos comunidades conectadas que más aumentan <span class="math inline">\(Q\)</span>, hasta que solo queda una. Después elige el paso en el que <span class="math inline">\(Q\)</span> fue máxima. A diferencia de Louvain, las fusiones son <strong>definitivas</strong>: si un nodo se une pronto a la comunidad equivocada, ya no puede salir de ella. A cambio, es determinista y genera un dendrograma completo que se puede cortar en el número de comunidades que queramos (<code>cluster_fast_greedy()</code> y <code>cut_at()</code>).</p>
+</section>
+<section id="leiden" class="level3">
+<h3 class="anchored" data-anchor-id="leiden"><strong>Leiden</strong></h3>
+<p>Traag, Waltman y van Eck (2019) mostraron que Louvain puede producir comunidades <strong>mal conectadas o incluso desconectadas</strong>: un nodo que hacía de “puente” dentro de una comunidad se mueve a otra en una fase posterior, y la comunidad queda partida en dos trozos con la misma etiqueta. <strong>Leiden</strong> añade una fase de refinamiento que garantiza que todas las comunidades estén conectadas, y además es más rápido. Hoy es el método estándar en el análisis de <em>single-cell</em> RNA-seq (por ejemplo en Scanpy). En igraph hay que usar <code>cluster_leiden(g, objective_function = "modularity")</code>, porque por defecto optimiza otra función que deja cada nodo en su propia comunidad.</p>
+</section>
+</section>
+<section id="limite-resolucion" class="level2">
+<h2 class="anchored" data-anchor-id="limite-resolucion"><strong>El Límite de Resolución de la Modularidad</strong></h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Una <span class="math inline">\(Q\)</span> más alta no siempre es una partición mejor
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Fortunato y Barthélemy (2007) demostraron que maximizar la modularidad <strong>no puede detectar comunidades por debajo de cierto tamaño</strong>, que depende del tamaño de <strong>toda</strong> la red. En redes grandes, comunidades pequeñas y bien definidas acaban fusionadas con sus vecinas, porque eso da una <span class="math inline">\(Q\)</span> más alta. Esto afecta a todos los métodos que usan <span class="math inline">\(Q\)</span>: los de esta familia, y también Edge Betweenness y Walktrap, que usan <span class="math inline">\(Q\)</span> para elegir dónde cortar.</p>
+</div>
+</div>
+<p>El ejemplo clásico es un <strong>anillo de cliques</strong>: grupos de 5 nodos totalmente conectados, cada uno unido al siguiente por una sola arista. Cada clique es, obviamente, una comunidad.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>anillo_de_cliques <span class="ot">&lt;-</span> <span class="cf">function</span>(n_cliques, <span class="at">k =</span> <span class="dv">5</span>) {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  g <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">`</span><span class="at">%du%</span><span class="st">`</span>, <span class="fu">replicate</span>(n_cliques, <span class="fu">make_full_graph</span>(k), <span class="at">simplify =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_cliques) {</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    siguiente <span class="ot">&lt;-</span> i <span class="sc">%%</span> n_cliques  <span class="co"># el último clique se une al primero</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    g <span class="ot">&lt;-</span> <span class="fu">add_edges</span>(g, <span class="fu">c</span>((i <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> k <span class="sc">+</span> <span class="dv">1</span>, siguiente <span class="sc">*</span> k <span class="sc">+</span> <span class="dv">2</span>))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  g</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (n <span class="cf">in</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">30</span>)) {</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  g <span class="ot">&lt;-</span> <span class="fu">anillo_de_cliques</span>(n)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(n, <span class="st">"cliques -&gt; Fast Greedy:"</span>, <span class="fu">length</span>(<span class="fu">cluster_fast_greedy</span>(g)),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">"| Louvain:"</span>, <span class="fu">length</span>(<span class="fu">cluster_louvain</span>(g)),</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">"| Infomap:"</span>, <span class="fu">length</span>(<span class="fu">cluster_infomap</span>(g)), <span class="st">"comunidades</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>10 cliques -&gt; Fast Greedy: 10 | Louvain: 10 | Infomap: 10 comunidades
+30 cliques -&gt; Fast Greedy: 16 | Louvain: 16 | Infomap: 30 comunidades</code></pre>
+</div>
+</div>
+<p>Así se ve el anillo de 30 cliques. A la izquierda, la partición “obvia”; a la derecha, la que encuentra Louvain. Los colores se alternan alrededor del anillo para que se distinga dónde acaba cada comunidad:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>g30 <span class="ot">&lt;-</span> <span class="fu">anillo_de_cliques</span>(<span class="dv">30</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Disposición: los cliques en círculo, y los 5 nodos de cada clique en un círculo pequeño</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>angulo <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> (<span class="dv">0</span><span class="sc">:</span><span class="dv">29</span>) <span class="sc">/</span> <span class="dv">30</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>centros <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">cos</span>(angulo), <span class="fu">sin</span>(angulo))[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>, <span class="at">each =</span> <span class="dv">5</span>), ]</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>giro <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> <span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">30</span>) <span class="sc">/</span> <span class="dv">5</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>layout_anillo <span class="ot">&lt;-</span> centros <span class="sc">+</span> <span class="fl">0.08</span> <span class="sc">*</span> <span class="fu">cbind</span>(<span class="fu">cos</span>(giro), <span class="fu">sin</span>(giro))</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>correcta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>, <span class="at">each =</span> <span class="dv">5</span>)  <span class="co"># cada clique, una comunidad</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>louvain30 <span class="ot">&lt;-</span> <span class="fu">membership</span>(<span class="fu">cluster_louvain</span>(g30))</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Colores alternos alrededor del anillo, para distinguir comunidades vecinas</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>colorea <span class="ot">&lt;-</span> <span class="cf">function</span>(memb) {</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  orden <span class="ot">&lt;-</span> <span class="fu">unique</span>(memb)  <span class="co"># comunidades en el orden en que aparecen en el anillo</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  paleta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"#009E73"</span>, <span class="st">"#CC79A7"</span>)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  paleta[(<span class="fu">match</span>(memb, orden) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> <span class="dv">4</span> <span class="sc">+</span> <span class="dv">1</span>]</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(g30, <span class="at">layout =</span> layout_anillo, <span class="at">vertex.color =</span> <span class="fu">colorea</span>(correcta),</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.size =</span> <span class="dv">4</span>, <span class="at">vertex.label =</span> <span class="cn">NA</span>,</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">"Cada clique es una comunidad</span><span class="sc">\n</span><span class="st">30 comunidades, Q = "</span>,</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">round</span>(<span class="fu">modularity</span>(g30, correcta), <span class="dv">3</span>)))</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(g30, <span class="at">layout =</span> layout_anillo, <span class="at">vertex.color =</span> <span class="fu">colorea</span>(louvain30),</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.size =</span> <span class="dv">4</span>, <span class="at">vertex.label =</span> <span class="cn">NA</span>,</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">"Resultado de Louvain</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">max</span>(louvain30), <span class="st">" comunidades, Q = "</span>,</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">round</span>(<span class="fu">modularity</span>(g30, louvain30), <span class="dv">3</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Con 10 cliques, todos los métodos encuentran las 10 comunidades. Con 30, los métodos basados en la modularidad <strong>fusionan cliques por parejas</strong>, porque esa partición tiene una <span class="math inline">\(Q\)</span> mayor que la correcta. Infomap, de la familia 3 (que veremos a continuación y no usa la modularidad), sigue encontrando los 30. En una red de proteínas, esto significa que un complejo pequeño puede quedar “absorbido” dentro de un módulo mayor. Louvain y Leiden tienen un parámetro <code>resolution</code> (valores mayores dan comunidades más pequeñas) para compensarlo.</p>
+</section>
+</section>
+<section id="familia-3-seguir-el-flujo" class="level1">
+<h1><strong>Familia 3: Seguir el Flujo</strong></h1>
+<p>Los métodos de esta familia imaginan un <strong>caminante aleatorio</strong> que se mueve por la red saltando de nodo en nodo por las aristas. Si la red tiene comunidades, el caminante pasa mucho tiempo dentro de cada una y solo de vez en cuando cruza a otra: las comunidades “atrapan” el flujo.</p>
+<section id="infomap" class="level2">
+<h2 class="anchored" data-anchor-id="infomap"><strong>Infomap</strong></h2>
+<p><strong>Infomap</strong> (Rosvall y Bergstrom, 2008) parte de una idea muy distinta a la de la modularidad: viene de la teoría de la información. Busca la partición de la red que permite <strong>describir el recorrido del caminante aleatorio con el menor número de bits</strong>. Dicho así suena raro, pero tiene bastante sentido, como vamos a ver.</p>
+<section id="cómo-funciona-el-algoritmo-infomap" class="level3">
+<h3 class="anchored" data-anchor-id="cómo-funciona-el-algoritmo-infomap"><strong>¿Cómo Funciona el Algoritmo Infomap?</strong></h3>
+<ol type="1">
+<li><p><strong>El Caminante</strong><br>
+Como en toda esta familia, partimos de un caminante aleatorio que pasa largos periodos dentro de cada comunidad y solo de vez en cuando salta a otra.</p></li>
+<li><p><strong>Codificación del Recorrido</strong><br>
+Queremos describir el recorrido del caminante con un código (como una secuencia de bits). Infomap usa un <strong>código en dos niveles</strong>: un nombre para cada comunidad, que solo se usa al <strong>entrar</strong> en ella, y nombres cortos para los nodos <strong>dentro</strong> de cada comunidad, que se reutilizan en todas las comunidades.</p></li>
+<li><p><strong>El Código más Corto</strong><br>
+Infomap busca la partición que minimiza la longitud media de esa descripción (la <em>ecuación del mapa</em>, o <em>map equation</em>). Esa partición es la que mejor refleja cómo fluye el caminante por la red. Es como dar direcciones: si alguien pasa casi todo el tiempo dentro de la misma ciudad, basta con decir el nombre de la calle, y solo hace falta nombrar la ciudad cuando cambia de una a otra. Cuanto menos salga el caminante de cada comunidad, más corta es la descripción.</p></li>
+<li><p><strong>Resultado</strong><br>
+En igraph, <code>cluster_infomap()</code> devuelve <strong>una única partición</strong> (no un dendrograma), así que no se puede cortar en distintos niveles como Fast Greedy o Walktrap.</p></li>
+</ol>
+</section>
+<section id="ventajas-y-desventajas-2" class="level3">
+<h3 class="anchored" data-anchor-id="ventajas-y-desventajas-2"><strong>Ventajas y Desventajas</strong></h3>
+<p><strong>Ventajas</strong>:</p>
+<ul>
+<li><strong>No usa la modularidad</strong>: no sufre su límite de resolución, y detecta bien comunidades pequeñas.</li>
+<li><strong>Natural para redes dirigidas y ponderadas</strong>: como modela un flujo, tiene en cuenta la dirección y el peso de las aristas (útil en redes de señalización o de regulación).</li>
+<li><strong>Rápido</strong>: funciona sin problemas con redes de decenas de miles de nodos.</li>
+</ul>
+<p><strong>Desventajas</strong>:</p>
+<ul>
+<li><strong>Resultados variables</strong>: tiene un componente aleatorio (por defecto prueba 10 veces y se queda con la mejor), así que conviene usar <code>set.seed()</code>.</li>
+<li><strong>Depende de que las comunidades “atrapen” el flujo</strong>: si los caminantes salen con facilidad de cada grupo, Infomap puede no detectarlos.</li>
+</ul>
+</section>
+<section id="ejemplo-en-r-1" class="level3">
+<h3 class="anchored" data-anchor-id="ejemplo-en-r-1"><strong>Ejemplo en R</strong></h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>im <span class="ot">&lt;-</span> <span class="fu">cluster_infomap</span>(red_islas)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(red_islas, <span class="at">layout =</span> layout_islas, <span class="at">vertex.color =</span> <span class="fu">membership</span>(im),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.size =</span> <span class="dv">5</span>, <span class="at">vertex.label =</span> <span class="cn">NA</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">"Infomap: "</span>, <span class="fu">length</span>(im), <span class="st">" comunidades, Q = "</span>, <span class="fu">round</span>(<span class="fu">modularity</span>(im), <span class="dv">2</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Infomap no optimiza la modularidad, pero podemos calcularla igualmente para comparar su partición con la de los demás métodos.</p>
+</section>
+</section>
+<section id="otro-método-de-esta-familia-walktrap" class="level2">
+<h2 class="anchored" data-anchor-id="otro-método-de-esta-familia-walktrap"><strong>Otro Método de esta Familia: Walktrap</strong></h2>
+<p>Walktrap (Pons y Latapy, 2005) también usa caminatas aleatorias, pero de otra forma: para cada nodo calcula la probabilidad de que una caminata <strong>corta</strong> (por defecto 4 pasos) que empieza en él acabe en cada uno de los demás nodos. Dos nodos de la misma comunidad tienen perfiles de probabilidades parecidos, porque sus caminatas acaban en los mismos sitios. Con esa distancia, Walktrap fusiona comunidades de forma jerárquica, como Fast Greedy, y corta el dendrograma donde <span class="math inline">\(Q\)</span> es máxima. Por eso está a medio camino entre las familias 2 y 3: usa el flujo para medir la distancia, pero la modularidad para decidir el número de comunidades (y hereda su límite de resolución).</p>
+</section>
+</section>
+<section id="un-método-más-label-propagation" class="level1">
+<h1><strong>Un Método más: Label Propagation</strong></h1>
+<p>La propagación de etiquetas (Raghavan, Albert y Kumara, 2007) no optimiza ninguna función: cada nodo empieza con una etiqueta propia y, repetidamente y en orden aleatorio, adopta la etiqueta más frecuente entre sus vecinos. Los grupos densamente conectados acaban compartiendo una misma etiqueta, que se convierte en su comunidad. Es el método más rápido de todos, pero también el más inestable: dos ejecuciones pueden dar resultados distintos, y si las comunidades no están claras una sola etiqueta puede “invadir” toda la red (en una red aleatoria suele acabar con una única comunidad, mientras que Louvain encuentra varias).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="label_prop.png" class="img-fluid figure-img"></p>
+<figcaption>label propagation</figcaption>
+</figure>
+</div>
+<p>Ninguno de los métodos de esta práctica permite que un nodo pertenezca a <strong>varias comunidades</strong> a la vez, y sin embargo muchas proteínas participan en varios complejos o rutas. En la <a href="clustering_2.html">segunda parte</a> veremos las <strong>comunidades de enlaces</strong> (LinkComm), que agrupan aristas en lugar de nodos y permiten precisamente eso.</p>
+</section>
+<section id="comparación-de-los-métodos" class="level1">
+<h1><strong>Comparación de los Métodos</strong></h1>
+<p>¿Dan todos los métodos el mismo resultado? Para responder necesitamos una red en la que conozcamos las comunidades reales, así que volvemos a usar una red <strong>LFR</strong>, ahora con comunidades menos claras (<code>mu = 0.3</code>: el 30% de las aristas de cada nodo salen de su comunidad).</p>
+<p>Para medir cuánto se parece cada partición a las comunidades reales usamos la <strong>información mutua normalizada</strong> (NMI, <em>Normalized Mutual Information</em>), con <code>compare(..., method = "nmi")</code>: vale 1 si las dos particiones son idénticas y cerca de 0 si no tienen nada que ver.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Los parámetros de sample_lfr()">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Los parámetros de sample_lfr()
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parámetro</th>
+<th>Qué controla</th>
+<th>En esta práctica</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>n</code></td>
+<td>Número de nodos.</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td><code>mu</code></td>
+<td>Fracción de las aristas de cada nodo que salen de su comunidad. Es el parámetro clave: con <code>mu</code> bajo las comunidades están muy claras; hacia <code>mu = 0.5</code>, la mitad de las aristas de cada nodo van a otras comunidades y se vuelven difíciles de detectar.</td>
+<td>0.1, 0.3 y 0.5</td>
+</tr>
+<tr class="odd">
+<td><code>tau1</code></td>
+<td>Exponente de la ley de potencias de la distribución de grados. Cuanto más pequeño, más heterogéneos son los grados (más hubs). En redes reales suele estar entre 2 y 3.</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td><code>tau2</code></td>
+<td>Exponente de la distribución de tamaños de las comunidades. Cuanto más pequeño, más distintos son los tamaños entre sí.</td>
+<td>1.5</td>
+</tr>
+<tr class="odd">
+<td><code>average_degree</code></td>
+<td>Grado medio de los nodos (obligatorio).</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td><code>max_degree</code></td>
+<td>Grado máximo de los nodos (obligatorio).</td>
+<td>5</td>
+</tr>
+<tr class="odd">
+<td><code>min_community</code>, <code>max_community</code></td>
+<td>Tamaño mínimo y máximo de las comunidades. Si no se indican, se eligen automáticamente a partir de los grados, y con grados tan bajos salen comunidades pequeñas.</td>
+<td>Sin indicar</td>
+</tr>
+<tr class="even">
+<td><code>on</code>, <code>om</code></td>
+<td>Número de nodos que pertenecen a varias comunidades, y a cuántas pertenece cada uno. Por defecto 0: sin solapamiento.</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Fíjate en la penúltima fila: como no indicamos el tamaño de las comunidades y los grados son bajos, las comunidades salen pequeñas. En la red de la comparación (<code>mu = 0.3</code>), las 22 comunidades tienen 4 o 5 nodos. Por eso los métodos basados en la modularidad, que tienden a fusionar comunidades pequeñas, lo tienen difícil en esta red. Si quieres comunidades más grandes, indica <code>min_community</code> y <code>max_community</code> (y un grado medio mayor).</p>
+<p>Los parámetros <code>on</code> y <code>om</code> permiten crear redes con comunidades <strong>solapadas</strong>, que ninguno de los métodos de esta práctica puede detectar. Las veremos en la <a href="clustering_2.html">segunda parte</a>.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>g_lfr_03 <span class="ot">&lt;-</span> <span class="fu">sample_lfr</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">tau1 =</span> <span class="dv">3</span>, <span class="at">tau2 =</span> <span class="fl">1.5</span>, <span class="at">mu =</span> <span class="fl">0.3</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">average_degree =</span> <span class="dv">4</span>, <span class="at">max_degree =</span> <span class="dv">5</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>verdad_03 <span class="ot">&lt;-</span> <span class="fu">V</span>(g_lfr_03)<span class="sc">$</span>membership</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Comunidades reales:"</span>, <span class="fu">length</span>(<span class="fu">unique</span>(verdad_03)),</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">" Q de la partición real:"</span>, <span class="fu">round</span>(<span class="fu">modularity</span>(g_lfr_03, verdad_03), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Comunidades reales: 22  Q de la partición real: 0.643 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aristas dentro de una comunidad en gris oscuro; entre comunidades, en gris claro</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>extremos <span class="ot">&lt;-</span> <span class="fu">ends</span>(g_lfr_03, <span class="fu">E</span>(g_lfr_03), <span class="at">names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>dentro <span class="ot">&lt;-</span> verdad_03[extremos[, <span class="dv">1</span>]] <span class="sc">==</span> verdad_03[extremos[, <span class="dv">2</span>]]</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(g_lfr_03, <span class="at">layout =</span> <span class="fu">layout_with_fr</span>(g_lfr_03),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.color =</span> <span class="fu">hcl.colors</span>(<span class="fu">max</span>(verdad_03), <span class="st">"Dynamic"</span>)[verdad_03],</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">vertex.size =</span> <span class="dv">6</span>, <span class="at">vertex.label =</span> <span class="cn">NA</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">edge.color =</span> <span class="fu">ifelse</span>(dentro, <span class="st">"grey30"</span>, <span class="st">"grey80"</span>),</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">edge.width =</span> <span class="fu">ifelse</span>(dentro, <span class="dv">2</span>, <span class="dv">1</span>),</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Red LFR (mu = 0.3), coloreada por sus comunidades reales"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Cada color es una de las 22 comunidades reales. Las aristas en gris claro unen nodos de comunidades distintas: con <code>mu = 0.3</code>, son casi un tercio del total, así que las comunidades ya no se ven tan claras como en la red de Edge Betweenness. Veamos qué encuentra cada método:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>compara_metodos <span class="ot">&lt;-</span> <span class="cf">function</span>(g) {</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  verdad <span class="ot">&lt;-</span> <span class="fu">V</span>(g)<span class="sc">$</span>membership</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  metodos <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Edge betweenness"</span>  <span class="ot">=</span> cluster_edge_betweenness,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Walktrap"</span>          <span class="ot">=</span> cluster_walktrap,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Fast Greedy"</span>       <span class="ot">=</span> cluster_fast_greedy,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Louvain"</span>           <span class="ot">=</span> cluster_louvain,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Leiden"</span>            <span class="ot">=</span> <span class="cf">function</span>(g) <span class="fu">cluster_leiden</span>(g, <span class="at">objective_function =</span> <span class="st">"modularity"</span>),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Infomap"</span>           <span class="ot">=</span> cluster_infomap,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Label propagation"</span> <span class="ot">=</span> cluster_label_prop</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  resultados <span class="ot">&lt;-</span> <span class="fu">lapply</span>(metodos, <span class="cf">function</span>(metodo) <span class="fu">metodo</span>(g))</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">comunidades =</span> <span class="fu">sapply</span>(resultados, length),</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Q   =</span> <span class="fu">round</span>(<span class="fu">sapply</span>(resultados, <span class="cf">function</span>(r) <span class="fu">modularity</span>(g, <span class="fu">membership</span>(r))), <span class="dv">3</span>),</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">NMI =</span> <span class="fu">round</span>(<span class="fu">sapply</span>(resultados, compare, verdad, <span class="at">method =</span> <span class="st">"nmi"</span>), <span class="dv">2</span>)</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="fu">compara_metodos</span>(g_lfr_03)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  comunidades     Q  NMI
+Edge betweenness           10 0.686 0.83
+Walktrap                   11 0.685 0.85
+Fast Greedy                10 0.643 0.79
+Louvain                    10 0.686 0.84
+Leiden                     11 0.685 0.86
+Infomap                    21 0.650 0.99
+Label propagation          21 0.648 0.98</code></pre>
+</div>
+</div>
+<p>Fíjate en dos cosas:</p>
+<ul>
+<li>Los métodos basados en la modularidad encuentran <strong>menos comunidades</strong> que las reales, pero con una <span class="math inline">\(Q\)</span> <strong>más alta</strong> que la de la partición real. Es el límite de resolución: según su propio criterio “aciertan”, pero han fusionado comunidades pequeñas.</li>
+<li>Infomap y Label Propagation, que no usan la modularidad, se acercan mucho más a las comunidades reales (NMI más alta).</li>
+</ul>
+<p>Es decir: <strong>una <span class="math inline">\(Q\)</span> más alta no significa una partición más correcta</strong>. Con datos reales no conocemos las comunidades verdaderas, así que conviene aplicar varios métodos y fijarse en los módulos en los que coinciden.</p>
+<section id="resumen" class="level2">
+<h2 class="anchored" data-anchor-id="resumen">Resumen</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Método</th>
+<th>Familia</th>
+<th>Qué optimiza</th>
+<th>Jerárquico</th>
+<th>Mismo resultado en cada ejecución</th>
+<th>Velocidad</th>
+<th>Principal debilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Edge Betweenness</td>
+<td>1</td>
+<td>Nada al dividir; <span class="math inline">\(Q\)</span> solo para elegir el corte</td>
+<td>Sí (divisivo)</td>
+<td>Sí</td>
+<td>Lento</td>
+<td>Inviable en redes grandes</td>
+</tr>
+<tr class="even">
+<td>Walktrap</td>
+<td>3 (y 2)</td>
+<td>Distancia entre caminatas al fusionar; <span class="math inline">\(Q\)</span> para elegir el corte</td>
+<td>Sí (aglomerativo)</td>
+<td>Sí</td>
+<td>Medio</td>
+<td>Límite de resolución</td>
+</tr>
+<tr class="odd">
+<td>Fast Greedy</td>
+<td>2</td>
+<td><span class="math inline">\(Q\)</span></td>
+<td>Sí (aglomerativo)</td>
+<td>Sí</td>
+<td>Rápido</td>
+<td>Fusiones irreversibles; límite de resolución</td>
+</tr>
+<tr class="even">
+<td>Louvain</td>
+<td>2</td>
+<td><span class="math inline">\(Q\)</span></td>
+<td>Por niveles</td>
+<td>No</td>
+<td>Muy rápido</td>
+<td>Comunidades desconectadas; límite de resolución</td>
+</tr>
+<tr class="odd">
+<td>Leiden</td>
+<td>2</td>
+<td><span class="math inline">\(Q\)</span> (u otras)</td>
+<td>Por niveles</td>
+<td>No</td>
+<td>Muy rápido</td>
+<td>Límite de resolución (ajustable)</td>
+</tr>
+<tr class="even">
+<td>Infomap</td>
+<td>3</td>
+<td>Longitud de la descripción del recorrido</td>
+<td>No (en igraph)</td>
+<td>No</td>
+<td>Rápido</td>
+<td>Comunidades que no “atrapan” el flujo</td>
+</tr>
+<tr class="odd">
+<td>Label Propagation</td>
+<td>—</td>
+<td>Nada (regla de la mayoría)</td>
+<td>No</td>
+<td>No</td>
+<td>El más rápido</td>
+<td>Inestable; puede dejar una sola comunidad</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="ejercicio" class="level1">
+<h1><strong>Ejercicio</strong></h1>
+<ol type="1">
+<li>Repite la comparación con <code>mu = 0.1</code> y con <code>mu = 0.5</code> (manteniendo el resto de parámetros y <code>set.seed(100)</code>). ¿Cómo cambia la NMI de cada método al aumentar <code>mu</code>? ¿Qué le pasa a Label Propagation con <code>mu = 0.5</code>?</li>
+<li>Con <code>mu = 0.1</code>, ¿importa mucho qué método elijamos? ¿Y con <code>mu = 0.5</code>?</li>
+<li>Ejecuta <code>compara_metodos(g_lfr_03)</code> varias veces <strong>sin</strong> fijar la semilla. ¿Qué métodos dan siempre el mismo resultado? ¿Por qué?</li>
+</ol>
+</section>
+<section id="referencias" class="level1">
+<h1><strong>Referencias</strong></h1>
+<ul>
+<li>Barabási, A.-L., Gulbahce, N. y Loscalzo, J. (2011). Network medicine: a network-based approach to human disease. <em>Nat. Rev.&nbsp;Genet.</em>, 12, 56–68.</li>
+<li>Blondel, V. D. et al.&nbsp;(2008). Fast unfolding of communities in large networks. <em>J. Stat. Mech.</em>, P10008.</li>
+<li>Clauset, A., Newman, M. E. J. y Moore, C. (2004). Finding community structure in very large networks. <em>Phys. Rev.&nbsp;E</em>, 70, 066111.</li>
+<li>Fortunato, S. y Barthélemy, M. (2007). Resolution limit in community detection. <em>PNAS</em>, 104, 36–41.</li>
+<li>Girvan, M. y Newman, M. E. J. (2002). Community structure in social and biological networks. <em>PNAS</em>, 99, 7821–7826.</li>
+<li>Gordon, D. E. et al.&nbsp;(2020). A SARS-CoV-2 protein interaction map reveals targets for drug repurposing. <em>Nature</em>, 583, 459–468.</li>
+<li>Hartwell, L. H., Hopfield, J. J., Leibler, S. y Murray, A. W. (1999). From molecular to modular cell biology. <em>Nature</em>, 402, C47–C52.</li>
+<li>Lancichinetti, A., Fortunato, S. y Radicchi, F. (2008). Benchmark graphs for testing community detection algorithms. <em>Phys. Rev.&nbsp;E</em>, 78, 046110.</li>
+<li>Langfelder, P. y Horvath, S. (2008). WGCNA: an R package for weighted correlation network analysis. <em>BMC Bioinformatics</em>, 9, 559.</li>
+<li>Pons, P. y Latapy, M. (2005). Computing communities in large networks using random walks. <em>ISCIS 2005</em>, LNCS 3733, 284–293.</li>
+<li>Raghavan, U. N., Albert, R. y Kumara, S. (2007). Near linear time algorithm to detect community structures in large-scale networks. <em>Phys. Rev.&nbsp;E</em>, 76, 036106.</li>
+<li>Rosvall, M. y Bergstrom, C. T. (2008). Maps of random walks on complex networks reveal community structure. <em>PNAS</em>, 105, 1118–1123.</li>
+<li>Traag, V. A., Waltman, L. y van Eck, N. J. (2019). From Louvain to Leiden: guaranteeing well-connected communities. <em>Sci. Rep.</em>, 9, 5233.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
